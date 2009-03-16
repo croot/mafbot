@@ -1,4 +1,3 @@
 =Содержание=
 
-[Описание классической игры Мафия]
-[http://code.google.com/p/mafbot/w/edit/main]
+[ClassicGame Описание классической игры Мафия]
