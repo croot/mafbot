@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Start only with this script
+
 cd `dirname ${0}`
 
 ./mafbot.pl
