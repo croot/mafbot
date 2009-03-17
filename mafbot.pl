@@ -69,43 +69,16 @@ $presense->SetType("available");
 $presense->SetStatus("");
 $client->Send($presense);
 
-# Входим в конференцию
-$client->MUCJoin(
-    'room'     => $settings{'muc_room'},
-    'server'   => $settings{'muc_server'},
-    'nick'     => $settings{'muc_nick'},
-    'password' => $settings{'muc_password'},
-);
-
-# Функция получения ответа на сообщение
-sub GetReplyMsg {
-    my $sender_nick = $_[0];
-    my $msg_body = $_[1];
-    
-    # Если сообщение адресовано конкретно боту или начинается с восклицательного знака
-    if ($msg_body =~ s!^$settings{'muc_nick'}(?:: | )!! || $msg_body =~ s!^\!(\w+\.*)!$1!) {
-	# Если команда help
-	if ( $msg_body =~ m{^help$}i ) {
-	    my $help_message = "$sender_nick: \n";
-	    $help_message .= "Я пока почти ничего не умею:(\n";
-	    $help_message .= "Сейчас можете попробовать следующие команды:\n";
-	    $help_message .= "game - простая игра с ботом\n";
-	    $help_message .= "help - вывод этой справки\n";
-	    $help_message .= "rand - генерация случайного числа от 1 до 6\n";
-	    #$help_message .= "whois - получением информации об указанном домене\n";
-	    return $help_message;
-	}
-	# Если команда rand
-	if ( $msg_body =~ m{^rand$}i ) {
-	    return "$sender_nick: ".int(rand(6)+1);
-	}
-	# Если команда game
-	if ( $msg_body =~ m{^game}i ) {
-	    return process_game( $sender_nick, $msg_body);
-	}
-    }
-    return undef;
-};
+# Входим в конференции
+foreach my $conf ('mafia', 'main', 'peaceful') {
+    print $conf."\n";
+    $client->MUCJoin(
+	'room'     => $settings{'muc_'.$conf.'_room'},
+        'server'   => $settings{'muc_'.$conf.'_server'},
+	'nick'     => $settings{'muc_'.$conf.'_nick'},
+        'password' => $settings{'muc_'.$conf.'_password'},
+    );
+}
 
 # Функция обработки сообщений
 sub on_message {
@@ -121,27 +94,7 @@ sub on_message {
     # Получаем тип сообщения
     my $msg_type = $msg->GetType;
     
-    
-    if (
-	( $sender_chat eq $settings{'muc_room'}.'@'.$settings{'muc_server'} ) # Если сообщение сказано в чате
-	&& ( $msg_type eq 'groupchat' ) # Сказанно именно в чате, а не в привате
-	) {
-	
-	# Обрабатываем сообщение и возвращаем ответ
-	my $reply_text = GetReplyMsg($sender_nick, $msg_body);
-	
-	# Если ответ определён
-	if ($reply_text) {
-	    my $reply = Net::Jabber::Message->new();
-    	    $reply->SetMessage(
-		    'to'   => $sender_chat,
-	    	    'body' => $reply_text,
-	    	    'type' => 'groupchat',
-	    );
-	    $client->Send($reply);
-	}
-    }
-    
+
 }
 
 # Цикл обработки сообщений
