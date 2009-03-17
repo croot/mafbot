@@ -94,6 +94,8 @@ sub on_message {
     # Получаем тип сообщения
     my $msg_type = $msg->GetType;
     
+    print $msg->GetFrom."\n";
+    print $msg->GetBody."\n\n\n";
 
 }
 
