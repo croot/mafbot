@@ -11,16 +11,13 @@ use utf8;
 
 use lib './modules';
 
-use game;
+use mafbot_main;
 
 # Список файлов конфигурации для перебора
 my @configs = (
     $ENV{'HOME'}.'/.mafbot',   # Пользовательский файл конфигурации
     '/etc/mafbot.conf',        # Системный конфиг
 );
-
-# Хэш для хранения настроек
-my %settings;
 
 # Перебираем все файлы конфигурации
 foreach my $config (@configs) {
@@ -41,10 +38,6 @@ foreach my $config (@configs) {
 if (!%settings) {
     die("Can't read settings!");
 }
-
-# Определяем основные перменные
-my $client   = new Net::Jabber::Client();
-my $presense = Net::Jabber::Presence->new();
 
 # Определяем обработчики событий
 $client->SetCallBacks(
